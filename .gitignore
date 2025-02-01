@@ -1,0 +1,23 @@
+# Ignore Python Virtual Environment
+venv/
+tripadvisor2_ve/
+
+# Ignore Python Cache & Build Files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Ignore Model Checkpoints & Large Files
+*.pt
+*.ckpt
+*.h5
+*.onnx
+fine_tuned_t5_travel/
+fine_tuned_models/
+
+# Ignore Dataset Splits (if large)
+train_travel_data.json
+validation_travel_data.json
+test_travel_data.json
