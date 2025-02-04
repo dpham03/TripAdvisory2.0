@@ -8,9 +8,9 @@ User Uploaded Images: \
 	Image 2: A sunset over a mountain range.
 
 User Text Input: \
-	I am departing from Tokyo, Japan in December and will return in July. My budget is retirement budget monthly cost under $2000 , and I prefer local delicacies . I will be traveling family of four for gap year , and I enjoy polar bear watching . I prefer a fishing village destination with humid weather. I will travel via private jet and prefer to use EUR for transactions. My accommodation choice is luxury resort , and my transportation preference is rental car . I want a romantic experience with sustainable tourism focus. My trip should be intense , and I love historical immersion . I am interested in Coachella and will need full travel insurance , medical-only insurance , cancellation protection , adventure sports coverage , no travel insurance needed . I prefer locations with politically stable and assistance for elderly support. For nightlife, I prefer clubbing , and my adventure level is low . I will also be adding airport lounge access to my trip.
-
-###Processing Steps \
+	I am departing from New York, USA in August and will return in March. My budget is ultra-luxury travel $1000+ per day, and I prefer street food. I will be traveling partner for one month, and I enjoy camping. I prefer a remote village destination with cold weather. My transportation preference is public transport. My trip is in spring, and I am interested in F1 races. The local language should be French-speaking, and I need a electronic travel authorization destination. My trip should be n, and my adventure level is extreme. For nightlife, I prefer beach parties. I prefer locations with low-crime area and service dog friendly support. I am interested in a cultural experience with sustainable tourism focus. I will also be adding guided city tours to my trip.
+	
+### Processing Steps \
 Step 1: Process images: \
 	Extract image embeddings folder: image_embeddings_extraction.py -> return a csv image_embeddings.csv (512,)
 
