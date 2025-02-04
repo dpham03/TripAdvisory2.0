@@ -8,19 +8,20 @@ User Uploaded Images:
 User Text Input:
 "I want a relaxing vacation under $2000 with peaceful beaches, scenic views, good weather in March, and nearby restaurants. The location should have affordable flights and hotels. I also enjoy hiking and photography."
 Processing Steps
-Step 1: Analyze Images
+Step 1: Process images
+	Extract image embeddings folder: image_embeddings_extraction.py -> return a csv image_embeddings.csv (512,)
 
-	Extract features using CLIP:
-    	Image 1: Embedding suggests “beach,” “tropical,” “quiet.”
-    	Image 2: Embedding suggests “mountain,” “sunset,” “scenic.”
-
-Step 2: Parse Text
-
+Step 2: Process user text prompts
+	Generate 100k synthetic prompts to fine tune the T5 model to generate extracted criteria
 	Extracted criteria from text input:
     	Budget: $2000.
-    	Preferences: Relaxing, peaceful beach, hiking, scenic views, photography.
     	Weather: Good weather in March.
     	Additional: Restaurants, affordable flights/hotels.
+	Output from LLM then go through evaluate.py -> clean user_preference.json 
+	Extract the embedding from the user_preference.json
+
+Step 3: Create multi_modal_user_embedding = $\alpha$ * image_embeddings + $\beta$ * text_embeddings
+($\alpha$ and $\beta$ hyperparameter deciding the relative importance of images versus text prompts)
 
 Step 3: Query Knowledge Base
 
