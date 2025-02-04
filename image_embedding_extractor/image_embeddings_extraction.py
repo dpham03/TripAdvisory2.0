@@ -53,7 +53,7 @@ else:
     aggregated_embedding = image_embeddings[0] if image_embeddings else None
 
 # Save embeddings to CSV (for easy lookup)
-df.to_csv("image_embeddings.csv", index=False)
+df.to_csv("./user_embedding/image_embeddings.csv", index=False)
 
 
 # Print aggregated embedding shape
