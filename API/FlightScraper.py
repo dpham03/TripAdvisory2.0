@@ -16,7 +16,7 @@ class AirportFlightGraph:
         self.airports_pkl_file = airports_pkl_file
         self.routes_pkl_file = routes_pkl_file
         
-        self.graph = self._load_or_build_graph(fetch_from_web)
+        self.graph, self.city_translator = self._load_or_build_graph(fetch_from_web)
 
     def _load_or_build_graph(self, fetch_from_web):
         """Loads the graph from pickle if available; otherwise, fetches or builds it."""
@@ -30,12 +30,12 @@ class AirportFlightGraph:
         
         # check to see if we need to build the graph at all
         graph = Pickler.load_pkl(self.graph_pkl_file)
-        if graph is not None: return graph
+        if graph is not None: return (graph, self._create_airport_city_map())
         
         # Build and save the graph
         graph = self._build_flight_graph()
         Pickler.store_pkl(self.graph_pkl_file, graph)
-        return graph
+        return (graph, self._create_airport_city_map())
 
     def _fetch_airports_data(self, fetch_from_web):
         """Downloads airport data and stores it as a pickle file."""
@@ -120,7 +120,16 @@ class AirportFlightGraph:
             else:
                 return f"No valid path found between {src_city} and {dst_city}."
 
-        return total_path
+        path_dict = {}
+        airport_cities = []
+        last_idx = 0
+        for idx, path in enumerate(total_path):
+            found_city = self.city_translator[path]
+            if found_city in cities:
+                path_dict.update({ found_city : total_path[last_idx:idx] })
+                last_idx = idx
+                
+        return path_dict
 
     @lru_cache(maxsize=None) # Memoization on the shortest path between any two airports
     def _get_shortest_airport_path(self, src, dst): # shortest path function
@@ -131,6 +140,10 @@ class AirportFlightGraph:
             return path, distance
         except (nx.NetworkXNoPath, nx.NodeNotFound):
             return None, float('inf')
+    
+    def _create_airport_city_map(self):
+        """Directly maps airport IATA codes to their respective city names using preloaded pickle data."""
+        return {row["iata"]: row["city"] for _, row in self.airports_df.iterrows()}
         
 if __name__ == "__main__":
     # Initialize the AirportFlightGraph
