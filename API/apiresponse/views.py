@@ -1,9 +1,9 @@
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 import json
-from FlightScraper import AirportFlightGraph
+from FlightScraper import SearchFlights
 
-@csrf_exempt  # Disable CSRF protection for testing purposes
+@csrf_exempt
 def find_airport_path(request):
     """
     Given a list of cities in a POST request, return the optimal airport path with city-airport mapping.
@@ -18,7 +18,7 @@ def find_airport_path(request):
                 return JsonResponse({"error": "At least two cities are required."}, status=400)
 
             # Initialize FlightScraper logic
-            graph = AirportFlightGraph(fetch_from_web=True)
+            graph = SearchFlights(fetch_from_web=True)
 
             # Find the flight path
             path_result = graph.find_path_between_multiple_cities(cities)
