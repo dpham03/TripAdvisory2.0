@@ -2,7 +2,7 @@ from datasets import load_from_disk
 from transformers import T5Tokenizer, T5ForConditionalGeneration, Trainer, TrainingArguments
 
 def train_t5():
-    MODEL_NAME = "t5-base"
+    MODEL_NAME = "t5-small"
     model = T5ForConditionalGeneration.from_pretrained(MODEL_NAME)
     tokenizer = T5Tokenizer.from_pretrained(MODEL_NAME)
 
@@ -38,7 +38,7 @@ def train_t5():
     trainer.train()
 
     # ✅ Save final trained model
-    model.save_pretrained("fine_tuned_models/fine_tuned_t5_travel_2_epochs")
+    model.save_pretrained("fine_tuned_models/fine_tuned_t5_small_travel_3_epochs")
 
     print("✅ Model trained and saved! Tokenizer was already saved at the beginning.")
 
