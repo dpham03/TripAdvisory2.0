@@ -78,7 +78,7 @@ def explanation(city_name):
     # Return explanation for the recommended city
     return city_explanations[city_name]
 
-def get_recommendations_with_time(image_folder_path, prompt_path, alpha, beta, top_k=5):
+def get_recommendations_with_time(image_folder_path, prompt, alpha, beta, top_k=5):
     """
     Generates city recommendations based on user embedding and records the running time.
 
@@ -94,7 +94,7 @@ def get_recommendations_with_time(image_folder_path, prompt_path, alpha, beta, t
     """
     start = datetime.datetime.now()
     
-    user_embedding = get_user_overall_embedding(image_folder_path, prompt_path, alpha, beta)
+    user_embedding = get_user_overall_embedding(image_folder_path, prompt, alpha, beta)
     recommendations = recommend_cities(user_embedding, top_k=top_k)
 
     end = datetime.datetime.now()
@@ -104,16 +104,16 @@ def get_recommendations_with_time(image_folder_path, prompt_path, alpha, beta, t
 
 # Example Usage
 image_folder_path = os.path.abspath(os.path.join(SCRIPT_DIR, "data/images"))
-prompt_path = os.path.abspath(os.path.join(SCRIPT_DIR, "synthetic_prompts/tokenized_synthetic_travel_data"))
+prompt = "I am departing from Toronto, Canada in July and will return in August. My budget is adventure travel budget ($1,000 - $3,000 for guided tours), and I prefer local delicacies. I will be traveling solo for one week, and I enjoy hiking. I prefer a mountainous destination with cool ocean breeze weather. I will travel via high-speed train and prefer to use local currency for transactions. My accommodation choice is eco-lodge, and my transportation preference is walking. I want an adventure experience with wildlife conservation focus. My trip should be extreme adventure, and I love indigenous culture. I am interested in Carnival in Rio and will need full travel insurance. I prefer locations with female-friendly and wheelchair access support. For nightlife, I prefer casual bars, and my adventure level is high. I will also be adding guided city tours to my trip."
 alpha = 0.5
 beta = 0.5
 top_k = 5
 
-recommendations, running_time = get_recommendations_with_time(image_folder_path, prompt_path, alpha, beta, top_k)
+recommendations, running_time = get_recommendations_with_time(image_folder_path, prompt, alpha, beta, top_k)
 
 print("\n**Top Recommended Cities:**")
 for city, score in recommendations:
     print(f"{city} - Similarity Score: {score*100:.2f}/100")
-    print(f"Explanation: {explanation(city)}\n")
+    #print(f"Explanation: {explanation(city)}\n")
 
 print("Time taken:", running_time)
