@@ -5,42 +5,40 @@ import numpy as np
 from datetime import datetime
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from src.embedding_extract.image_embeddings_extraction import extract_clip_image_embeddings
 from src.model.evaluate import evaluate_t5
 
 # Get the absolute path of the current script's directory
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))  # This should point to the root of the project
 
-def get_user_overall_embedding(image_folder_path, prompt_path, alpha, beta):
+
+def get_user_overall_embedding(image_folder_path, prompt, alpha, beta):
     """
     Extracts user overall embedding by running image and text embedding extraction in parallel.
     If either image or text folder is missing, only the available embedding is used.
     """
     start_time = datetime.now()
     image_embedding, text_embedding = None, None
-    
-    # Convert relative paths to absolute paths
-    image_folder_path = os.path.join(PROJECT_ROOT, image_folder_path)  # Absolute path to image folder
-    prompt_path = os.path.join(PROJECT_ROOT, prompt_path)  # Absolute path to prompt folder
 
+    # Convert relative paths to absolute paths
+    image_folder_path = os.path.abspath(os.path.join(SCRIPT_DIR, image_folder_path))
     # Extract image embedding only if the folder exists
     if os.path.exists(image_folder_path):
         def extract_image_embedding():
-            print(image_folder_path)
             return extract_clip_image_embeddings(image_folder_path)
     else:
         extract_image_embedding = None  # No image embedding
         print("No image folder found")
-
     # Extract text embedding only if the text dataset exists
-    if os.path.exists(prompt_path):
-        print(prompt_path)
+    if prompt:
         def extract_text_embedding():
-            sample_prompt = "I am departing from London, UK in August and will return in March. My budget is $2000. I prefer a historical city destination with tropical weather."
-            return evaluate_t5(sample_prompt)
+            return evaluate_t5(prompt)
+        print(prompt)
     else:
         extract_text_embedding = None  # No text embedding
+        print("No prompt provided")
 
     # Run tasks in parallel if both exist
     with ThreadPoolExecutor(max_workers=2) as executor:
@@ -48,8 +46,10 @@ def get_user_overall_embedding(image_folder_path, prompt_path, alpha, beta):
         future_text = executor.submit(extract_text_embedding) if extract_text_embedding else None
 
         image_embedding = future_image.result() if future_image else None
-        text_embedding = None # future_text.result() if future_text else None
-    
+        text_embedding = future_text.result() if future_text else None
+
+    #image_embedding = extract_image_embedding()
+    #text_embedding = extract_text_embedding()
     # If only one type of embedding is available, return it directly
     if image_embedding is None and text_embedding is not None:
         return normalize_embedding(text_embedding)
@@ -61,12 +61,13 @@ def get_user_overall_embedding(image_folder_path, prompt_path, alpha, beta):
     # Normalize embeddings
     image_embedding = normalize_embedding(image_embedding)
     text_embedding = normalize_embedding(text_embedding)
-    
+    print(image_embedding.shape, text_embedding.shape)
     # Ensure both embeddings have the same dimension
     pad_image_embedding, pad_text_embedding = pad_embeddings(image_embedding, text_embedding)
-    
+
     # Compute final user embedding
     final_user_embedding = compute_final_user_embedding(alpha, beta, pad_image_embedding, pad_text_embedding)
+    
     return final_user_embedding
 
 
@@ -94,13 +95,13 @@ def compute_final_user_embedding(alpha, beta, pad_image_embedding, pad_text_embe
 
 # Example usage
 if __name__ == "__main__":
-    image_folder_path = "images"
-    prompt_path = "synthetic_prompts/tokenized_synthetic_travel_data"
+    image_folder_path = "../../data/images"
+    prompt = "I am departing from Toronto, Canada in July and will return in August. My budget is adventure travel budget ($1,000 - $3,000 for guided tours), and I prefer local delicacies. I will be traveling solo for one week, and I enjoy hiking. I prefer a mountainous destination with cool ocean breeze weather. I will travel via high-speed train and prefer to use local currency for transactions. My accommodation choice is eco-lodge, and my transportation preference is walking. I want an adventure experience with wildlife conservation focus. My trip should be extreme adventure, and I love indigenous culture. I am interested in Carnival in Rio and will need full travel insurance. I prefer locations with female-friendly and wheelchair access support. For nightlife, I prefer casual bars, and my adventure level is high. I will also be adding guided city tours to my trip."
     
     alpha = 0.5
     beta = 0.5
     start_time = datetime.now()
-    final_user_embedding = get_user_overall_embedding(image_folder_path, prompt_path, alpha, beta)
+    final_user_embedding = get_user_overall_embedding(image_folder_path, prompt, alpha, beta)
 
     print("Final user embedding shape:", final_user_embedding.shape)
     print("Total time taken:", datetime.now() - start_time)

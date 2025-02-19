@@ -2,7 +2,7 @@ import json
 import faiss
 import numpy as np
 import os
-from embedding_extraction.implicit_user_embedding import get_user_overall_embedding
+from embedding_extract.implicit_user_embedding import get_user_overall_embedding
 from model.evaluate import evaluate_t5
 from model.evaluate import extract_criteria2, user_preferences_to_embedding
 
