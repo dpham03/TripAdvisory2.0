@@ -2,9 +2,11 @@ import json
 import faiss
 import numpy as np
 import os
-from embedding_extract.implicit_user_embedding import get_user_overall_embedding
-from model.evaluate import evaluate_t5
-from model.evaluate import extract_criteria2, user_preferences_to_embedding
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+from src.embedding_extract.implicit_user_embedding import get_user_overall_embedding
+from src.model.evaluate import evaluate_t5
+from src.model.evaluate import extract_criteria2, user_preferences_to_embedding
 
 def generate_city_embeddings(city_json_file):
     """
@@ -25,14 +27,16 @@ def generate_city_embeddings(city_json_file):
         image_folder = city["image_folder"]  # Path to images
         
         # 🔹 Flatten city metadata into a string
-        print(str(city_metadata))
+        #print(str(city_metadata))
+        print(city_name)
+        city_names.append(city_name)
         #city_metadata_text = " ".join([f"{key}: {value}" for key, value in city_metadata.items()])
         #print(city_metadata_text)
         #print(type(city_metadata_text))
         city_meta_text_structured = extract_criteria2(city_metadata, ["description", "weather", "landscape", "transportation", "activities", "cuisine"])
-        print(city_meta_text_structured)
+        #print(city_meta_text_structured)
         city_meta_text_embedidng = user_preferences_to_embedding(city_meta_text_structured)
-        print(city_meta_text_embedidng.shape)
+        #print(city_meta_text_embedidng.shape)
         # 🔹 Check if images exist
         image_folder_exists = os.path.exists(image_folder) and os.listdir(image_folder)
 
@@ -73,4 +77,4 @@ def generate_city_embeddings(city_json_file):
     print("✅ City embeddings stored in FAISS and saved as 'city_embeddings.index'")
 
 # Run the function
-generate_city_embeddings("synthetic_city_database.json")
+generate_city_embeddings("data/dataset/us_cities.json")

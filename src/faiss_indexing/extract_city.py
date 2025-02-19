@@ -22,7 +22,7 @@ def recommend_cities(user_embedding, top_k=None):
         List of recommended city names with similarity scores.
     """
     # Load FAISS index
-    index_path = os.path.join(SCRIPT_DIR, "data/embeddings/city_embeddings.index")
+    index_path = os.path.join(SCRIPT_DIR, "city_embeddings.index")
     index = faiss.read_index(index_path)
 
     # Ensure user embedding matches FAISS index dimension
@@ -44,8 +44,9 @@ def recommend_cities(user_embedding, top_k=None):
     # Convert L2 distances to similarity scores (1 / (1 + distance))
     similarity_scores = 1 / (1 + distances[0])
 
+
     # Load city names
-    city_names_path = os.path.join(SCRIPT_DIR, "data/embeddings/city_names.json")
+    city_names_path = os.path.join(SCRIPT_DIR, "city_names.json")
     with open(city_names_path, "r") as f:
         city_names = json.load(f)
 
