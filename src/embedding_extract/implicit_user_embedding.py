@@ -5,6 +5,8 @@ import numpy as np
 from datetime import datetime
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from src.embedding_extract.image_embeddings_extraction import extract_clip_image_embeddings
 from src.model.evaluate import evaluate_t5
 

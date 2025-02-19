@@ -6,6 +6,9 @@ import requests
 from constants import FlightScraper as FS
 import Pickler
 from functools import lru_cache
+import logging
+
+logger = logging.getLogger(__name__)
 
 class SearchFlights:
     def __init__(self, fetch_from_web=True, airports_url=FS.URL_AIRPORTS, routes_url=FS.URL_ROUTES, graph_pkl_file='Pickles/airport_flight_graph.pkl', airports_pkl_file='Pickles/airports_data.pkl', routes_pkl_file = 'Pickles/routes_data.pkl'):
@@ -27,7 +30,7 @@ class SearchFlights:
         
         # verify the data is legit
         if self.airports_df is None or self.routes_df is None:
-            raise Exception("Link is not working, no pkl stored")
+            logger.error("Link is not working, no pkl stored")
         
         # check to see if we need to build the graph at all
         graph = Pickler.load_pkl(self.graph_pkl_file)
