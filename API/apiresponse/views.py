@@ -8,6 +8,7 @@ import json
 from constants import KnownDirs, HTTP, Config
 import os
 import sys
+import shutil 
     
 # core functionality
 from FlightScraper import SearchFlights
@@ -112,13 +113,21 @@ def find_recommended_cities(request):
     try:
         user_embedding = get_user_overall_embedding(KnownDirs.API_DIR + image_path, KnownDirs.API_DIR + prompt_path, a, b)
         recommended_cities = recommend_cities(user_embedding, top_k=Config.TOP_K)
+        
+        # Clean up media directory
+        if os.path.exists(image_path):
+            shutil.rmtree(image_path)  # Deletes all images
+            os.makedirs(image_path)  # Recreate empty folder
+
+        # Delete the prompt file if it exists
+        if os.path.exists(prompt_path):
+            os.remove(prompt_path)
+        
         return JsonResponse({"recommended_cities": recommended_cities}, status=HTTP.OK)
 
     except Exception as e:
         return JsonResponse({"error": "Error processing the embeddings"}, status=HTTP.INTERNAL_SERVER_ERROR)
     
-
-        
 @csrf_exempt
 def find_airport_path(request):
     """
