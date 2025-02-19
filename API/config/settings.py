@@ -77,8 +77,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.dummy',  # Use a dummy database engine
-        'NAME': 'dummy',  # Dummy database, no actual database
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',  # path to your SQLite database
     }
 }
 

@@ -7,6 +7,7 @@ import datetime
 
 # Get the absolute path of the current working directory (terminal location)
 SCRIPT_DIR = os.getcwd()
+PROJECT_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))  # This should point to the root of the project
 
 def recommend_cities(user_embedding, top_k=None):
     """
@@ -58,17 +59,17 @@ def recommend_cities(user_embedding, top_k=None):
         return city_scores[:top_k]
     return city_scores
 
-# Example Usage
-start = datetime.datetime.now()
-image_folder_path = os.path.abspath(os.path.join(SCRIPT_DIR, "data/images"))
-#print(image_folder_path)
-prompt_path = os.path.abspath(os.path.join(SCRIPT_DIR, "synthetic_prompts/tokenized_synthetic_travel_data"))
-#print(prompt_path)
-user_embedding = get_user_overall_embedding(image_folder_path, prompt_path, 0.5, 0.5)
-recommendations = recommend_cities(user_embedding, top_k=3)
+# # Example Usage
+# start = datetime.datetime.now()
+# image_folder_path = os.path.abspath(os.path.join(SCRIPT_DIR, "data/images"))
+# #print(image_folder_path)
+# prompt_path = os.path.abspath(os.path.join(SCRIPT_DIR, "synthetic_prompts/tokenized_synthetic_travel_data"))
+# #print(prompt_path)
+# user_embedding = get_user_overall_embedding(image_folder_path, prompt_path, 0.5, 0.5)
+# recommendations = recommend_cities(user_embedding, top_k=3)
 
-print("\n**Top Recommended Cities:**")
-for city, score in recommendations:
-    print(f"{city} - Similarity Score: {score:.4f}")
-end = datetime.datetime.now()
-print("Time taken:", end - start)
+# print("\n**Top Recommended Cities:**")
+# for city, score in recommendations:
+#     print(f"{city} - Similarity Score: {score:.4f}")
+# end = datetime.datetime.now()
+# print("Time taken:", end - start)

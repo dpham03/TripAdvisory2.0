@@ -22,6 +22,7 @@ class HTTP:
 class KnownDirs:
     IMAGE_DIR = "Media/images/"
     TEXT_FILE_PATH = "Media/prompt.txt"
+    API_DIR = "API/"
 
 class Config:
     TOP_K = 5

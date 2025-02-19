@@ -7,16 +7,18 @@ from .models import EmbeddingConfig
 import json
 from constants import KnownDirs, HTTP, Config
 import os
+import sys
     
 # core functionality
 from FlightScraper import SearchFlights
 
-# database and embedding tools
-from src.embedding_extract.implicit_user_embedding import get_user_overall_embedding
-from src.faiss_indexing.extract_city import recommend_cities
-
 # debugging tools
 import time
+
+# database and embedding tools
+sys.path.append('..')
+from src.embedding_extract.implicit_user_embedding import get_user_overall_embedding
+from src.faiss_indexing.extract_city import recommend_cities
 
 os.makedirs(KnownDirs.IMAGE_DIR, exist_ok=True)
 
@@ -27,6 +29,7 @@ def upload_image(request):
             return JsonResponse({"error": "No image uploaded."}, status=HTTP.BAD_REQUEST)
 
     image = request.FILES["image"]
+    print(f"Received image: {image.name}")  # Print image name to debug
     image_path = os.path.join(KnownDirs.IMAGE_DIR, image.name)
     
     if not image.name.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp')):
@@ -36,7 +39,7 @@ def upload_image(request):
         for chunk in image.chunks():
             dest.write(chunk)
 
-    return JsonResponse({"error": f"Image '{image.name}' uploaded."}, status=HTTP.CREATED)
+    return JsonResponse({"success": f"Image '{image.name}' uploaded."}, status=HTTP.CREATED)
     
 @csrf_exempt
 def upload_prompt(request):
@@ -77,7 +80,7 @@ def set_alpha_beta(request):
         return JsonResponse({"error": "Invalid alpha/beta values."}, status=HTTP.BAD_REQUEST)
 
 @csrf_exempt
-def recommend_cities(request):
+def find_recommended_cities(request):
     if not request.method == "GET":
         return JsonResponse({"error": "Invalid request method."}, status=HTTP.METHOD_NOT_ALLOWED)
     
@@ -107,10 +110,8 @@ def recommend_cities(request):
         return JsonResponse({"error": "Error fetching alpha/beta from database"}, status=HTTP.INTERNAL_SERVER_ERROR)
     
     try:
-        user_embedding = get_user_overall_embedding(image_path, prompt_path, a, b)
-
+        user_embedding = get_user_overall_embedding(KnownDirs.API_DIR + image_path, KnownDirs.API_DIR + prompt_path, a, b)
         recommended_cities = recommend_cities(user_embedding, top_k=Config.TOP_K)
-
         return JsonResponse({"recommended_cities": recommended_cities}, status=HTTP.OK)
 
     except Exception as e:
