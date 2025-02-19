@@ -2,6 +2,8 @@ import os
 import faiss
 import json
 import numpy as np
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from src.embedding_extract.implicit_user_embedding import get_user_overall_embedding
 import datetime
 
@@ -58,17 +60,60 @@ def recommend_cities(user_embedding, top_k=None):
         return city_scores[:top_k]
     return city_scores
 
+def explanation(city_name):
+    """
+    Provides an explanation for the recommendation.
+
+    Args:
+        city_name (str): Name of the recommended city.
+
+    Returns:
+        Explanation for the recommendation.
+    """
+    # Load city explanations
+    city_explanations_path = os.path.join(SCRIPT_DIR, "data/embeddings/city_explanations.json")
+    with open(city_explanations_path, "r") as f:
+        city_explanations = json.load(f)
+
+    # Return explanation for the recommended city
+    return city_explanations[city_name]
+
+def get_recommendations_with_time(image_folder_path, prompt_path, alpha, beta, top_k=5):
+    """
+    Generates city recommendations based on user embedding and records the running time.
+
+    Args:
+        image_folder_path (str): Path to the folder containing user images.
+        prompt_path (str): Path to the folder containing tokenized prompts.
+        alpha (float): Weight for image embeddings.
+        beta (float): Weight for prompt embeddings.
+        top_k (int, optional): Number of top cities to retrieve. Defaults to 5.
+
+    Returns:
+        Tuple containing the list of recommended cities with similarity scores and the running time.
+    """
+    start = datetime.datetime.now()
+    
+    user_embedding = get_user_overall_embedding(image_folder_path, prompt_path, alpha, beta)
+    recommendations = recommend_cities(user_embedding, top_k=top_k)
+
+    end = datetime.datetime.now()
+    running_time = end - start
+
+    return recommendations, running_time
+
 # Example Usage
-start = datetime.datetime.now()
 image_folder_path = os.path.abspath(os.path.join(SCRIPT_DIR, "data/images"))
-#print(image_folder_path)
 prompt_path = os.path.abspath(os.path.join(SCRIPT_DIR, "synthetic_prompts/tokenized_synthetic_travel_data"))
-#print(prompt_path)
-user_embedding = get_user_overall_embedding(image_folder_path, prompt_path, 0.5, 0.5)
-recommendations = recommend_cities(user_embedding, top_k=3)
+alpha = 0.5
+beta = 0.5
+top_k = 5
+
+recommendations, running_time = get_recommendations_with_time(image_folder_path, prompt_path, alpha, beta, top_k)
 
 print("\n**Top Recommended Cities:**")
 for city, score in recommendations:
-    print(f"{city} - Similarity Score: {score:.4f}")
-end = datetime.datetime.now()
-print("Time taken:", end - start)
+    print(f"{city} - Similarity Score: {score*100:.2f}/100")
+    print(f"Explanation: {explanation(city)}\n")
+
+print("Time taken:", running_time)
